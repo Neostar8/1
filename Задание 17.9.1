@@ -1,0 +1,81 @@
+def merge_sort(L):  # "разделяй"
+    if len(L) < 2:  # если кусок массива равен 2,
+        return L[:]  # выходим из рекурсии
+    else:
+        middle = len(L) // 2  # ищем середину
+        left = merge_sort(L[:middle])  # рекурсивно делим левую часть
+        right = merge_sort(L[middle:])  # и правую
+        return merge(left, right)  # выполняем слияние
+
+
+def merge(left, right):  # "властвуй"
+    result = []  # результирующий массив
+    i, j = 0, 0  # указатели на элементы
+
+    # пока указатели не вышли за границы
+    while i < len(left) and j < len(right):
+        if left[i] < right[j]:
+            result.append(left[i])
+            i += 1
+        else:
+            result.append(right[j])
+            j += 1
+
+    # добавляем хвосты
+    while i < len(left):
+        result.append(left[i])
+        i += 1
+
+    while j < len(right):
+        result.append(right[j])
+        j += 1
+
+    return result
+
+
+def binary_search(array, element, left, right):
+    if left > right:  # если левая граница превысила правую,
+        return False  # значит элемент отсутствует
+
+    middle = (right + left) // 2  # находимо середину
+    if array[middle] == element:  # если элемент в середине,
+        return middle  # возвращаем этот индекс
+    elif element < array[middle]:  # если элемент меньше элемента в середине
+        # рекурсивно ищем в левой половине
+        return binary_search(array, element, left, middle - 1)
+    else:  # иначе в правой
+        return binary_search(array, element, middle + 1, right)
+
+
+q = list(map(int, input('Введите числа через пробел'' ').split()))  # Введите числа через пробел
+element = int(input('Введите число' ' '))
+
+for i in q:
+    if element in q:
+        None
+    else:
+        raise Wrong_data('Введите число которое указано вами в списке ранее!')  # Исключение ошибки ввода данных
+
+print(f'Упорядоченный список чисел', merge_sort(q))
+array = merge_sort(q)
+w = len(merge_sort(q))
+
+print('Номер позиции числа, введенного пользователем',
+      binary_search(array, element, 0, w))  # Номер позиции числа, введенного пользователем
+e = binary_search(array, element, 0, w)
+
+if merge_sort(q)[-1] == merge_sort(q)[e]:
+    print('Это самый правый, крайний элемент')
+else:
+    print("Номер позиции элемента, который больше или равен введенного пользователем числа", e + 1)
+
+p = 1
+if merge_sort(q)[0] == merge_sort(q)[e]:
+    print('Это самый левый, крайний элемент')
+else:
+    while merge_sort(q)[e] >= merge_sort(q)[
+        e - p]:  # Номер позиции элемента, который меньше введенного пользователем числа
+        if merge_sort(q)[e] != merge_sort(q)[e - p]:
+            print('Номер позиции элемента, который меньше введенного пользователем числа', e - p)
+            break
+        p = p + 1
