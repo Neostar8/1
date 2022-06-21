@@ -128,12 +128,10 @@ class PetFriends:
         print(result)
         return status, result
 
-    # def add_new_photo(  auth_key: json, pet_photo: str, pet_id: str) -> json:
     def post_change_pet_photo(self, auth_key: json, pet_id: str, pet_photo: str) -> json:
 
         data = MultipartEncoder(
-            fields={'pet_photo': (pet_photo, open(pet_photo, 'rb'), 'image/jpeg')
-            })
+        fields={'pet_photo': (pet_photo, open(pet_photo, 'rb'), 'image/jpeg')})
         headers = {'auth_key': auth_key['key']}
 
         res = requests.post(self.base_url + 'api/pets/set_photo/' + pet_id, headers=headers, data=data)
