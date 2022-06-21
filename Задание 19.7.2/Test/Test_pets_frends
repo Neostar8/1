@@ -113,8 +113,9 @@ def test_post_change_pet_foto(pet_photo='images/pephoto.jpg'):
     # Получаем полный путь изображения питомца и сохраняем в переменную pet_photo
     pet_photo = os.path.join(os.path.dirname(__file__), pet_photo)
 
-    # Запрашиваем ключ api и сохраняем в переменную auth_key
+    # Запрашиваем ключ api и сохраняем в переменную auth_key и запрашиваем список своих питомцев
     _, auth_key = pf.get_api_key(valid_email, valid_password)
+    _, my_pets = pf.get_list_of_pets(auth_key, "my_pets")
 
     # Проверяем - если список своих питомцев пустой, то добавляем нового (БЕЗ ФОТО) и опять запрашиваем список своих питомцев
     if len(my_pets['pets']) == 0:
