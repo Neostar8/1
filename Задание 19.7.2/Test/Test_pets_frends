@@ -17,7 +17,7 @@ def test_get_api_key_for_valid_user(email=valid_email, password=valid_password):
     assert 'key' in result
 
 
-def test_get_all_pets_with_valid_key(filter='my_pets'):
+def test_get_all_pets_with_valid_key(filter=''):
     """ Проверяем что запрос всех питомцев возвращает не пустой список.
     Для этого сначала получаем api ключ и сохраняем в переменную auth_key. Далее используя этого ключ
     запрашиваем список всех питомцев и проверяем что список не пустой.
@@ -106,8 +106,7 @@ def test_add_new_pet_without_photo_with_valid_data(name='Саша', animal_type=
     assert result['name'] == name
 
 
-
-def test_post_change_pet_foto(pet_photo='images/pephoto.jpg'):
+def test_post_change_pet_foto(pet_photo='images/fhoto.jpg'):
     """Проверяем добавление нового фото"""
 
     # Получаем полный путь изображения питомца и сохраняем в переменную pet_photo
@@ -126,7 +125,7 @@ def test_post_change_pet_foto(pet_photo='images/pephoto.jpg'):
     pet_id = my_pets['pets'][0]['id']
 
     # Добавляем фото
-    status, result = pf.post_change_pet_photo(auth_key, pet_photo, pet_id)
+    status, result = pf.post_change_pet_photo(auth_key, pet_id, pet_photo)
 
     # Сверяем полученный ответ с ожидаемым результатом
     assert status == 200
