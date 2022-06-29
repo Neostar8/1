@@ -82,6 +82,7 @@ class PetFriends:
             result = res.json()
         except json.decoder.JSONDecodeError:
             result = res.text
+        print(res.headers)
         return status, result
 
     def update_pet_info(self, auth_key: json, pet_id: str, name: str,
@@ -129,7 +130,7 @@ class PetFriends:
         return status, result
 
     def post_change_pet_photo(self, auth_key: json, pet_id: str, pet_photo: str) -> json:
-
+        """Добавьте фото питомца"""
         data = MultipartEncoder(
             fields={
                 'pet_photo': (pet_photo, open(pet_photo, 'rb'), 'image/jpeg')}
@@ -143,4 +144,5 @@ class PetFriends:
             result = res.json()
         except json.decoder.JSONDecodeError:
             result = res.text
+        print(res.headers)
         return status, result
