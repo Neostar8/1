@@ -1,6 +1,9 @@
 from api import PetFriends
 from settings import valid_email, valid_password, not_valid_email, not_valid_password
 import os
+import pytest
+from datetime import datetime
+
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 pf = PetFriends()
@@ -15,6 +18,7 @@ def test_get_api_key_for_valid_user(email=valid_email, password=valid_password):
     assert status == 200
     assert 'key' in result
 
+@pytest.mark.negative
 def test_get_api_key_for_not_valid_user(email=not_valid_email, password=not_valid_password):
     """ 1 Негативный тест с проверкой невалидных значений not_valid_email, not_valid_password. """
 
@@ -36,7 +40,7 @@ def test_get_all_pets_with_valid_key(filter=''):
 
     assert status == 200
     assert len(result['pets']) > 0
-
+@pytest.mark.negative
 def test_get_all_pets_with_not_valid_filter_faild(filter='Собака'):
     """ 2 Негативный тест. Проверяем что запрос с невалидным значением filter возвращает статус 500 и не выдает значений.
     Для этого сначала получаем api ключ и сохраняем в переменную auth_key. Далее используя этого ключ
@@ -80,6 +84,8 @@ def test_add_new_pet_with_valid_special_characters_data(name='!"№;%:?*()_+@#$%
     # Сверяем полученный ответ с ожидаемым результатом
     assert status == 200
     assert result['name'] == name
+
+@pytest.mark.negative
 def test_add_new_pet_with_not_valid_data_faild(name='Роddма', animal_type='белка',
                                      age='А', pet_photo='images/pephoto.jpg'):
     """4 Проверяем что можно добавить питомца с некорректными данными в раздел age """
@@ -97,9 +103,11 @@ def test_add_new_pet_with_not_valid_data_faild(name='Роddма', animal_type='�
     assert status == 200
     assert result['age'] == age
 
+def generate_string(n):
+   return "x" * n
 
-def test_add_new_pet_with_valid_2_data(name='XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-                                       animal_type='XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+def test_add_new_pet_with_valid_2_data(name=generate_string(255),
+                                       animal_type=generate_string(255) ,
                                      age='А', pet_photo='images/pephoto.jpg'):
     """5 с валидными данными в размере 255 символов в разделах animal_type и name """
 
@@ -117,6 +125,7 @@ def test_add_new_pet_with_valid_2_data(name='XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
     assert result['animal_type'] == animal_type
     assert result['name'] == name
 
+@pytest.mark.negative
 def test_add_new_pet_with_not_valid_data_faild(name='', animal_type='',
                                      age='', pet_photo='images/pephoto.jpg'):
     """6 Проверяем создание питомца с пустыми значениями в разделах name, animal_type,age """
@@ -143,7 +152,7 @@ def test_successful_delete_self_pet():
     _, auth_key = pf.get_api_key(valid_email, valid_password)
     _, my_pets = pf.get_list_of_pets(auth_key, "my_pets")
 
-    # Проверяем - если список своих питомцев пустой, то добавляем нового и опять запрашиваем список своих питомцев
+    """Проверяем - если список своих питомцев пустой, то добавляем нового и опять запрашиваем список своих питомцев"""
     if len(my_pets['pets']) == 0:
         pf.add_new_pet(auth_key, "Суперкот", "кот", "3", "images/pephoto.jpg")
         _, my_pets = pf.get_list_of_pets(auth_key, "my_pets")
@@ -193,7 +202,7 @@ def test_add_new_pet_without_photo_with_valid_data(name='Саша', animal_type=
     assert status == 200
     assert result['name'] == name
 
-
+@pytest.mark.negative
 def test_add_new_pet_without_photo_with_valid_data_faild(name='', animal_type='',
                                      age=''):
     """7 Негативный тест.Проверяем создание питомца с пустыми значениями в разделах  animal_type,age (без фото)."""
@@ -235,7 +244,7 @@ def test_post_change_pet_foto(pet_photo='images/fhoto.jpg'):
     assert status == 200
     assert result['pet_photo'] !=0
 
-
+@pytest.mark.negative
 def test_post_change_pet_foto_faild(pet_photo='images/1.txt'):
     """8 Негативный тест. Отправляем вместо фото текстовый файл"""
 
@@ -256,7 +265,8 @@ def test_post_change_pet_foto_faild(pet_photo='images/1.txt'):
 
     # Добавляем фото
     status, result = pf.post_change_pet_photo(auth_key, pet_id, pet_photo)
-    print(result )
+    print(result)
+
     # Сверяем полученный ответ с ожидаемым результатом
     assert status == 200
     assert result['pet_photo'] !=0
@@ -296,3 +306,10 @@ def test_successful_update_self_pet_info_numbers(name='55555', animal_type='6666
     else:
         # если спиок питомцев пустой, то выкидываем исключение с текстом об отсутствии своих питомцев
         raise Exception("There is no my pets")
+
+@pytest.fixture(autouse=True)
+def time_delta():
+    start_time = datetime.now()
+    yield
+    end_time = datetime.now()
+    print(f"\nТест шел: {end_time - start_time}")
