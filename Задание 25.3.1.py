@@ -62,9 +62,6 @@ def test_show_my_pets():
         pets_name.append(name)
         pets.append(Pet(name.text, kind.text, age.text))
 
-    # pets.append(Pet("a", "b", "1"))
-    # pets.append(Pet("a", "b", "1"))
-    # print(pets)
 
     assert images_count > petsNumber / 2 # проверяем, что фото есть хотя бы у половины питомцев
     assert len(pets_name) == len(set(pets_name)) # Проверяем что все имена разные
